@@ -3,7 +3,7 @@ import numpy as np
 
 class KnapsackEnvironment:
 
-    def __init__(self, n_decision_points, knapsack_capacity):
+    def __init__(self, n_decision_points: int, knapsack_capacity: float):
         super(KnapsackEnvironment, self).__init__()
 
         # general parameters
@@ -62,7 +62,8 @@ class KnapsackEnvironment:
 
         # we return the next state observation, the reward, and whether the instance is over
         if self.done:  # if decision point was last decision point return only the profit and no next state
-            return None, reward, True
+            final_state = {"b": self.current_b, "p": 0.0, "item": 0.0, "t": self.ct}
+            return final_state, reward, True
         return self.observation, reward, False  # else we return the next state observation and the profit
 
     def reset(self):
