@@ -26,17 +26,17 @@ class LinearRegression:
         ct = observation["t"]
         if b < item:
             return False
-        remaining_b_taking = 1 - ((b - item) / self.knapsack_capacity)
+        remaining_b_taking = (b - item) / self.knapsack_capacity
         pds_value_taking = self.a[ct] * remaining_b_taking + self.b
 
-        remaining_b_not_taking = 1 - (b / self.knapsack_capacity)
+        remaining_b_not_taking = b / self.knapsack_capacity
         pds_value_not_taking = self.a[ct] * remaining_b_not_taking + self.b
 
         if p + pds_value_taking > pds_value_not_taking:
             return True
         return False
 
-    def fit(self, env, n_iterations, evaluate_every_n):
+    def train(self, env, n_iterations, evaluate_every_n):
 
         for training_episode in range(n_iterations):
             current_exploration_rate = 1.0 * np.exp(-1 * training_episode / (n_iterations / 4))
@@ -73,7 +73,7 @@ class LinearRegression:
         for pds, value in zip(observed_pds, pds_values):
             x = np.zeros(self.k_decision_points + 1)
             x[-1] = 1
-            x[pds[0]] = 1 - (pds[1] / self.knapsack_capacity)
+            x[pds[0]] = pds[1] / self.knapsack_capacity
             y = value
             y_hat = self.a[pds[0]] * x[pds[0]] + self.b
             grad = -2 * x * (y - y_hat)

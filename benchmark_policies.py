@@ -8,6 +8,11 @@ class Greedy:
 
     @staticmethod
     def act(observation):
-        if observation["b"] > observation["item"]:
+        """
+        Returns True if we can pack the item and False if not.
+        :param observation: Current Observation
+        :return: Decision as given by True (we pack the item) and False (we do not pack the item).
+        """
+        if observation["b"] > observation["item"]:  # test if item fits in the knapsack
             return True
         return False

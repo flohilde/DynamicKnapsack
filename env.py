@@ -2,8 +2,17 @@ import numpy as np
 
 
 class KnapsackEnvironment:
+    """
+    Environment to simulate the Dynamic Knapsack Problem with one item in each decision state.
+    """
 
     def __init__(self, n_decision_points: int, knapsack_capacity: float):
+        """
+        Initialize the KnapsackEnvironment.
+
+        :param n_decision_points: Number of decision points (corresponds to number of items).
+        :param knapsack_capacity: Knapsack capacity relative to the total weight of all items.
+        """
         super(KnapsackEnvironment, self).__init__()
 
         # general parameters
@@ -12,10 +21,9 @@ class KnapsackEnvironment:
 
         # state
         self.total_profit = None            # total collected profit over the instance
-        self.ct = None                      # current time step in (0,...,n_decision_points)
         self.items = None                   # all sampled items for the instance
         self.p = None                       # all sampled profits for the items of the instance
-        self.b = None                       # initial capacity of our knapsack
+        self.ct = None                      # current time step in (0,...,n_decision_points)
         self.current_b = None               # current capacity of our knapsack
         self.current_observation = None     # current state given by revealed item, its profit,
                                             # the remainining knapsack capacity and the current time point
@@ -38,15 +46,17 @@ class KnapsackEnvironment:
         """
         if self.ct == self.t:  # termination criterium (time-over )
             return True
-        if (self.b < self.items).all():  # stronger termination criterium (no remaining item fits into the knapsack)
+        if (self.current_b < self.items).all():  # stronger termination criterium (no remaining item fits into the knapsack)
             return True
         return False
 
     def step(self, action):
         """
         Transitions from one state to the next depending on the action taken and the stochastic information.
-        """
 
+        :param action: Action (True, False) whether to take the current item.
+        :return: Returns a new observation, the reward for the given decision, and a boolean if the instance is over.
+        """
         assert isinstance(action, bool)  # assert that the action is a boolean
         b = self.current_observation["b"]  # current knapsack capacity
         p = self.current_observation["p"]  # profit of current item
@@ -69,6 +79,8 @@ class KnapsackEnvironment:
     def reset(self):
         """
         Samples a new instance by sampling items and profits and constructing the knapsack accordingly.
+
+        :return: First observation of the new instance.
         """
         self.ct = 0  # ct now stars at 0 and goes to n_decision_points
         self.total_profit = 0  # initialize total profit to 0
@@ -76,8 +88,7 @@ class KnapsackEnvironment:
         self.items = np.random.uniform(size=self.t)  # sample items
         self.items = self.items / np.sum(self.items)  # normalize items
 
-        self.b = self.alpha  # initialize knapsack to a fraction of total item capacity given by alpha
-        self.current_b = self.b  # initialize current knapsack
+        self.current_b = self.alpha # initialize knapsack to a fraction of total item capacity given by alpha
 
         # Calculate the value pj of the items according to Chu & Beasley
         self.p = self.items + 0.5 * np.random.uniform(size=self.t)
